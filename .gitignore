@@ -1,0 +1,31 @@
+# Fichiers générés par Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Fichiers Playwright
+/playwright-report/
+/test-results/
+/screenshots/
+/videos/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers IDE (VSCode, IntelliJ)
+/.idea/
+/.vscode/
+*.iml
+
+# Logs
+*.log
+
+# Fichiers de build
+*.class
+*.jar
+*.war
+*.ear
+
+# Allure results
+/allure-results/
+/allure-report/
