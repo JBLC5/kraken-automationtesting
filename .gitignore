@@ -13,7 +13,7 @@
 Thumbs.db
 
 # Fichiers env
-.env
+Identifiants.env
 
 # Fichiers IDE (VSCode, IntelliJ)
 /.idea/
