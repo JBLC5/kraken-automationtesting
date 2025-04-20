@@ -1,18 +1,25 @@
 package com.kraken.tests;
 
 import com.kraken.pages.LoginPage;
+import com.kraken.utils.ScreenshotUtils;
 import com.microsoft.playwright.*;
 
 import io.qameta.allure.Allure;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
 
 import org.junit.jupiter.api.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import static com.kraken.utils.EnvConfig.*;
+
+@Epic("Authentification")
+@Feature("Connexion à Kraken")
+@Story("Connexion au compte Kraken FUTURES")
 public class KrakenLoginTest {
 
     static Playwright playwright;
@@ -34,10 +41,11 @@ public class KrakenLoginTest {
 
     @AfterEach
     void afterEach(TestInfo testInfo) {
-        String status = page.url().contains("dashboard") ? "success" : "error";
-
-        loginPage.captureLastStepScreenshot(status);
-
+        // Nettoie le nom du test pour qu’il soit safe pour un fichier
+        String testNameClean = testInfo.getDisplayName().replaceAll("[^a-zA-Z0-9-_]", "_");
+    
+        ScreenshotUtils.captureScreenshot(page, testNameClean);
+    
         page.close();
         page = browser.newPage();
     }
@@ -49,12 +57,10 @@ public class KrakenLoginTest {
     }
 
     @Test
-    @Story("Connexion au compte Kraken FUTURES")
     @Description("Ce test vérifie que la connexion avec des identifiants valides fonctionne.")
     @Severity(SeverityLevel.CRITICAL)
     void testLoginToKraken_ValidCredentials() {
-        loginPage.login("9p3gkjq6@futures-demo.com", "e9ydy7h38owtiv9xutk6");
-
+        loginPage.login(getLoginEmail(), getLoginPassword());
         Allure.step("Vérifier l'apparition de la pop-up de connexion réussie", () -> {
             Locator successPopup = page.getByText("Sign In Successful");
 
@@ -69,7 +75,6 @@ public class KrakenLoginTest {
     }
 
     @Test
-    @Story("Connexion au compte Kraken FUTURES")
     @Description("Ce test vérifie que la connexion échoue avec un mot de passe incorrect.")
     @Severity(SeverityLevel.NORMAL)
     void testLoginToKraken_InvalidCredentials() {
