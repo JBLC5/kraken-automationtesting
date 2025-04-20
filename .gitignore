@@ -12,6 +12,9 @@
 .DS_Store
 Thumbs.db
 
+# Fichiers env
+.env
+
 # Fichiers IDE (VSCode, IntelliJ)
 /.idea/
 /.vscode/
@@ -29,3 +32,8 @@ Thumbs.db
 # Allure results
 /allure-results/
 /allure-report/
+
+# Allure results utilisé uniquement pour Cogen
+/node_modules/
+package-lock.json
+package.json
