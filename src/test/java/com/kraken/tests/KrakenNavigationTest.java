@@ -1,6 +1,8 @@
 package com.kraken.tests;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.AriaRole;
+
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,12 +21,22 @@ public class KrakenNavigationTest {
     static void setup() {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+        page = browser.newPage();
+    }
+
+    @AfterEach
+    void afterEach(TestInfo testInfo) {
+        String testNameClean = testInfo.getDisplayName().replaceAll("[^a-zA-Z0-9-_]", "_");
+        ScreenshotUtils.captureScreenshot(page, testNameClean);
+    
+        page.close();
+        page = browser.newPage();
     }
 
     @AfterAll
-    static void tearDown() {
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
+    static void teardown() {
+        browser.close();
+        playwright.close();
     }
 
     @Test
@@ -32,37 +44,19 @@ public class KrakenNavigationTest {
     @Description("Ce test vérifie que la page https://demo-futures.kraken.com est accessible et prend une capture.")
     @Severity(SeverityLevel.CRITICAL)
     void testKrakenNavigation() {
-        page = browser.newPage();
 
-        try {
-            // Navigation vers la page et vérification du titre
-            step("Naviguer vers https://demo-futures.kraken.com", () -> {
-                page.navigate("https://demo-futures.kraken.com");
-            });
-
-            step("Vérifier le titre de la page", () -> {
-                String title = page.title();
-                assertTrue(title.toLowerCase().contains("kraken futures"));
-            });
-
-            // Capture d'écran en cas de succès
-            ScreenshotUtils.captureScreenshot(page, "success");
-            
-        } catch (Exception e) {
-            // Capture d'écran en cas d'échec
-            ScreenshotUtils.captureScreenshot(page, "error");
-            fail("Une exception est survenue : " + e.getMessage());
-        }
-    }
-
-    // Méthode 'step' modifiée pour accepter un lambda avec une gestion appropriée de l'exception
-    private void step(String name, Runnable executable) {
-        Allure.step(name, () -> {
+        Allure.step("Naviguer vers https://demo-futures.kraken.com", () -> {
             try {
-                executable.run();
-            } catch (Exception e) {
-                throw new RuntimeException("Erreur dans l'exécution de l'étape: " + name, e);
+            page.navigate("https://demo-futures.kraken.com");
+            Locator successDisplay = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("icon1 name BTC/USD MCContinuel"));
+            
+            successDisplay.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            assertTrue(successDisplay.isVisible(),
+                "L'en-tete 'BTC/USD MC continuel' n’est pas visible alors qu’il devrait l’être.");
+            } catch (TimeoutError e) {
+                throw new AssertionError("Échec d'accès à la page. Titre non trouvé.", e);
             }
+
         });
     }
 }

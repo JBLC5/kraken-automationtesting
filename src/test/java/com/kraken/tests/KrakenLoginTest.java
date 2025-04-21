@@ -3,6 +3,7 @@ package com.kraken.tests;
 import com.kraken.pages.LoginPage;
 import com.kraken.utils.ScreenshotUtils;
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.AriaRole;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.Epic;
@@ -41,9 +42,7 @@ public class KrakenLoginTest {
 
     @AfterEach
     void afterEach(TestInfo testInfo) {
-        // Nettoie le nom du test pour qu’il soit safe pour un fichier
         String testNameClean = testInfo.getDisplayName().replaceAll("[^a-zA-Z0-9-_]", "_");
-    
         ScreenshotUtils.captureScreenshot(page, testNameClean);
     
         page.close();
@@ -57,19 +56,43 @@ public class KrakenLoginTest {
     }
 
     @Test
-    @Description("Ce test vérifie que la connexion avec des identifiants valides fonctionne.")
+    @Description("Ce test vérifie que la connexion/deconnexion avec des identifiants valides fonctionne.")
     @Severity(SeverityLevel.CRITICAL)
     void testLoginToKraken_ValidCredentials() {
         loginPage.login(getLoginEmail(), getLoginPassword());
-        Allure.step("Vérifier l'apparition de la pop-up de connexion réussie", () -> {
-            Locator successPopup = page.getByText("Sign In Successful");
 
+        Allure.step("Vérifier l'apparition de la pop-up de connexion réussie", () -> {
             try {
-                successPopup.waitFor(new Locator.WaitForOptions().setTimeout(5000));
-                assertTrue(successPopup.isVisible(),
-                    "La pop-up 'Sign In Successful' n’est pas visible alors qu’elle devrait l’être.");
+            Locator successPopup = page.getByText("Sign In Successful");
+            successPopup.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            assertTrue(successPopup.isVisible(),
+                "La pop-up 'Sign In Successful' n’est pas visible alors qu’elle devrait l’être.");
             } catch (TimeoutError e) {
                 throw new AssertionError("Échec de la connexion : la pop-up 'Sign In Successful' n’a pas été trouvée après la soumission du formulaire.", e);
+            }
+        });
+
+        Allure.step("Vérifier la présence du bouton Sign-Out", () -> {
+            try {
+            page.locator("app-toolbar").getByRole(AriaRole.BUTTON).nth(3).click();
+            Locator successButton = page.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Sign Out"));
+            successButton.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            assertTrue(successButton.isVisible(),
+                "Le bouton 'Sign Out' n’est pas visible alors qu’il devrait l’être.");
+            } catch (TimeoutError e) {
+                throw new AssertionError("Échec : le bouton 'Sign Out' n’a pas été trouvée après avoir cliqué.", e);
+            }
+        });
+
+        Allure.step("Vérifier la redirection vers la page d'accueil hors connexion", () -> {
+            try {
+            page.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Sign Out")).click();
+            Locator signInButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Sign In"));
+            signInButton.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            assertTrue(signInButton.isVisible(),
+                "Le bouton 'Sign In' n’est pas visible alors qu’il devrait l’être.");
+            } catch (TimeoutError e) {
+                throw new AssertionError("Échec de la déconnexion : le bouton 'Sign In' n’a pas été trouvée après avoir cliqué.", e);
             }
         });
     }
@@ -81,12 +104,11 @@ public class KrakenLoginTest {
         loginPage.login("9p3gkjq6@futures-dem.com", "wrong_password");
 
         Allure.step("Vérifier l'apparition du message d'erreur", () -> {
-            Locator errorPopup = page.getByText("Sign In Failed - Invalid Credentials"); // <-- adapte ce texte au message réel affiché
-
             try {
-                errorPopup.waitFor(new Locator.WaitForOptions().setTimeout(5000));
-                assertTrue(errorPopup.isVisible(),
-                    "Le message d’erreur 'Invalid credentials' n’est pas visible alors qu’il devrait s’afficher.");
+            Locator errorPopup = page.getByText("Sign In Failed - Invalid Credentials"); // <-- adapte ce texte au message réel affiché
+            errorPopup.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            assertTrue(errorPopup.isVisible(),
+                "Le message d’erreur 'Invalid credentials' n’est pas visible alors qu’il devrait s’afficher.");
             } catch (TimeoutError e) {
                 throw new AssertionError("Échec attendu, mais aucun message d’erreur n’a été détecté.", e);
             }
