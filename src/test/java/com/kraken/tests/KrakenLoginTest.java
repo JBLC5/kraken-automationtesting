@@ -84,7 +84,7 @@ public class KrakenLoginTest {
             }
         });
 
-        Allure.step("Vérifier la redirection vers la page d'accueil hors connexion", () -> {
+        Allure.step("Cliquer sur Sign Out et vérifier la redirection vers la page d'accueil hors connexion", () -> {
             try {
             page.getByRole(AriaRole.MENUITEM, new Page.GetByRoleOptions().setName("Sign Out")).click();
             Locator signInButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Sign In"));

@@ -251,14 +251,12 @@ public class KrakenTransfersTest {
                     try {
                         successMessage.waitFor(new Locator.WaitForOptions().setTimeout(5000));
                         assertTrue(successMessage.isVisible(), "Le transfert aurait dû réussir mais le message ne s’est pas affiché.");
-                        Allure.step("✅ Transfert réussi comme prévu.");
                     } catch (TimeoutError e) {
                         throw new AssertionError("Échec inattendu : le transfert de " + montant + " aurait dû réussir.", e);
                     }
                 } else {
                     page.waitForTimeout(2000);
                     assertFalse(boutonEstActif, "Le bouton 'Submit Transfer' devrait être désactivé pour un montant invalide.");
-                    Allure.step("✅ Le transfert de " + montant + " a bien été bloqué comme attendu (bouton désactivé).");
                 }
             });}
 
