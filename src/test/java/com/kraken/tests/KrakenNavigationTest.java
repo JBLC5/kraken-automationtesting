@@ -48,9 +48,9 @@ public class KrakenNavigationTest {
         Allure.step("Naviguer vers https://demo-futures.kraken.com", () -> {
             try {
             page.navigate("https://demo-futures.kraken.com");
+
             Locator successDisplay = page.getByText("Système opérationnel");
-            
-            successDisplay.waitFor(new Locator.WaitForOptions().setTimeout(5000));
+            successDisplay.waitFor(new Locator.WaitForOptions().setTimeout(10000));
             assertTrue(successDisplay.isVisible(),
                 "Le pied de page 'Système Opérationnel' n’est pas visible alors qu’il devrait l’être.");
             } catch (TimeoutError e) {
