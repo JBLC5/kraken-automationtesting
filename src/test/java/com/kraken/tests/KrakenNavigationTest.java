@@ -48,13 +48,13 @@ public class KrakenNavigationTest {
         Allure.step("Naviguer vers https://demo-futures.kraken.com", () -> {
             try {
             page.navigate("https://demo-futures.kraken.com");
-            Locator successDisplay = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("icon1 name BTC/USD MCContinuel"));
+            Locator successDisplay = page.getByText("Système opérationnel");
             
             successDisplay.waitFor(new Locator.WaitForOptions().setTimeout(5000));
             assertTrue(successDisplay.isVisible(),
-                "L'en-tete 'BTC/USD MC continuel' n’est pas visible alors qu’il devrait l’être.");
+                "Le pied de page 'Système Opérationnel' n’est pas visible alors qu’il devrait l’être.");
             } catch (TimeoutError e) {
-                throw new AssertionError("Échec d'accès à la page. Titre non trouvé.", e);
+                throw new AssertionError("Échec d'accès à la page. État du système non trouvé.", e);
             }
 
         });
