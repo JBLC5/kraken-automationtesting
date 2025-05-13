@@ -49,10 +49,10 @@ public class KrakenNavigationTest {
             try {
             page.navigate("https://demo-futures.kraken.com");
 
-            Locator successDisplay = page.getByText("Système opérationnel");
+            Locator successDisplay = page.getByText("System Operational");
             successDisplay.waitFor(new Locator.WaitForOptions().setTimeout(10000));
             assertTrue(successDisplay.isVisible(),
-                "Le pied de page 'Système Opérationnel' n’est pas visible alors qu’il devrait l’être.");
+                "Le pied de page 'System Operational' n’est pas visible alors qu’il devrait l’être.");
             } catch (TimeoutError e) {
                 throw new AssertionError("Échec d'accès à la page. État du système non trouvé.", e);
             }
